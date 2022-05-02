@@ -1,12 +1,14 @@
-import { onSnapshot, addDoc, collection, getDoc, doc, query } from 'firebase/firestore';
+import { onSnapshot, addDoc, collection, doc, query, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import db from './firebaseConnection';
 import './style.css'
 
 const App = () => {
+  const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
-  const [id, setId] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [newAuthor, setNewAuthor] = useState('');
   const [posts, setPosts] = useState([] as any[]);
 
   const postsRef = collection(db, 'posts');
@@ -14,7 +16,7 @@ const App = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const _query = query(collection(db, 'posts'))
+        const _query = query(collection(db, 'posts'));
         onSnapshot(_query, (docs) => {
           const myPosts: any[] = [];
 
@@ -23,50 +25,64 @@ const App = () => {
               id: doc.id,
               title: doc.data().titulo,
               author: doc.data().autor,
-            })
-          })
+            });
+          });
 
           setPosts(myPosts);
         });
       } catch (error) {
-        console.log(error);
-      } 
+        console.log(`UseEffect: ${error}`);
+      }
     }
     loadPosts();
-  }, [])
+  }, []);
 
   const handlePostAdd = async () => {
     try {
       await addDoc(postsRef, {
-        titulo: title,
-        autor: author,
-      })
+        titulo: newTitle,
+        autor: newAuthor,
+      });
 
-      console.log('salvo com sucesso');
-      setTitle('');
-      setAuthor('');
+      alert('salvo com sucesso');
+      setNewTitle('');
+      setNewAuthor('');
     } catch (error) {
-      console.log(error);
+      console.log(`handlePostAdd: ${error}`);
     }
+  };
+
+  const handleOnClickPostUpdate = (id: string, author: string, title: string) => {
+    setId(id);
+    setAuthor(author);
+    setTitle(title);
   }
 
-  const handlePost = async () => {
+  const handlePostUpdate = async () => {
+    try {
+      await updateDoc(doc(db, 'posts', id), {
+        titulo: title,
+        autor: author,
+      });
+      setId('');
+      setTitle('');
+      setAuthor('');
+      alert('Atualizado com sucessos');
+    } catch (error) {
+      console.log(`handlePostUpdate: ${error}`);
+    };
+  };
+
+  const handlePostDelete = async (id: string) => {
     try {
       if (!id) {
         alert('Informe um id valido');
         return;
-      }
-      const docRef = doc(db, 'posts', id);
-      const docSnap = await getDoc(docRef)
-
-      if (docSnap.exists()) {
-        setTitle(docSnap.data().titulo)
-        setAuthor(docSnap.data().autor)
-      } else {
-        alert('Post não encotrado')
-      }
+      };
+      await deleteDoc(doc(db, 'posts', id));
+      alert('Deletado com sucessos');
     } catch (error) {
-      console.log(error);
+      console.log(`handlePostDelete: ${error}`)
     }
   }
 
@@ -74,29 +90,57 @@ const App = () => {
     <div className='App'>
       <h1>ReactJs + Firebase</h1>
       <div className='container'>
-        <label>Titulo: </label>
-        <textarea value={title} onChange={(event) => setTitle(event.target.value)} />
+        {!id &&
+          <div className='create-post'>
+            <label>Titulo: </label>
+            <textarea value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
 
-        <label>Autor: </label>
-        <textarea value={author} onChange={(event) => setAuthor(event.target.value)} />
+            <label>Autor: </label>
+            <textarea value={newAuthor} onChange={(event) => setNewAuthor(event.target.value)} />
 
-        <button onClick={handlePostAdd}>Cadastrar</button>
+            <button onClick={handlePostAdd}>Cadastrar</button>
+          </div>
+        }
 
-        <label>Id: </label>
-        <textarea value={id} onChange={(event) => setId(event.target.value)} />
-  
-        <button onClick={handlePost}>Buscar Post</button>
-        <ul>
-          {posts.map((post) => {
-            return (
-              <li key={post.id}>
-                <span>Id: {post.id}</span>
-                <span>Titulo: {post.title}</span>
-                <span>Autor: {post.author}</span>
-              </li>
-            )
-          })}
-        </ul>
+        {id &&
+          <div className='update-post'>
+            <label>Id: </label>
+            <textarea value={id} readOnly />
+
+            <label>Titulo: </label>
+            <textarea value={title} onChange={(event) => setTitle(event.target.value)} />
+
+            <label>Autor: </label>
+            <textarea value={author} onChange={(event) => setAuthor(event.target.value)} />
+            <div>
+              <button onClick={handlePostUpdate}>Atualizar Post</button>
+              <button onClick={() => setId('')}>Cancelar</button>
+            </div>
+          </div>
+        }
+
+        <table>
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Autor</th>
+              <th>Titulo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {posts.map((post) => {
+              return (
+                <tr>
+                  <td>{post.id}</td>
+                  <td>{post.author}</td>
+                  <td>{post.title}</td>
+                  <button className='button-deletar-post' onClick={() => handlePostDelete(post.id)}>Deletar</button>
+                  <button className='button-deletar-post' onClick={() => handleOnClickPostUpdate(post.id, post.author, post.title)}>Atualizar</button>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
