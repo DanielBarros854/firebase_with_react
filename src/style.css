@@ -8,6 +8,10 @@
   margin-bottom: 20px;
 }
 
+.container button {
+  margin-bottom: 10px;
+}
+
 .App {
   display: flex;
   flex-direction: column;
