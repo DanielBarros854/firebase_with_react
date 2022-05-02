@@ -12,6 +12,12 @@
   margin-bottom: 10px;
 }
 
+.container ul li {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
 .App {
   display: flex;
   flex-direction: column;
