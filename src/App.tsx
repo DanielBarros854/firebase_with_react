@@ -1,149 +1,77 @@
-import { onSnapshot, addDoc, collection, doc, query, updateDoc, deleteDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import db from './firebaseConnection';
-import './style.css'
+import Login from "./components/User/Login";
+import Post from "./components/Post/Post";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
+import UserAdd from "./components/User/UserAdd";
+import { authentication } from "./config/firebaseConnection";
+import './styles.css'
+import Logout from "./components/User/Logout";
+
+interface UserLoggedInterface {
+  uid: string,
+  email: string | null,
+  name: string | null
+}
 
 const App = () => {
-  const [id, setId] = useState('');
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [posts, setPosts] = useState([] as any[]);
-
-  const postsRef = collection(db, 'posts');
+  const [user, setUser] = useState(false);
+  const [userLogged, setUserLogged] = useState({} as UserLoggedInterface | null);
+  const [login, setLogin] = useState(true);
 
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        const _query = query(collection(db, 'posts'));
-        onSnapshot(_query, (docs) => {
-          const myPosts: any[] = [];
-
-          docs.forEach((doc) => {
-            myPosts.push({
-              id: doc.id,
-              title: doc.data().titulo,
-              author: doc.data().autor,
-            });
+    const checkLogin = async () => {
+      onAuthStateChanged(authentication, (user) => {
+        if (user) {
+          setUser(true);
+          setUserLogged({
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
           });
-
-          setPosts(myPosts);
-        });
-      } catch (error) {
-        console.log(`UseEffect: ${error}`);
-      }
+        } else {
+          setUser(false);
+          setUserLogged(null);
+        }
+      })
     }
-    loadPosts();
-  }, []);
 
-  const handlePostAdd = async () => {
-    try {
-      await addDoc(postsRef, {
-        titulo: newTitle,
-        autor: newAuthor,
-      });
-
-      alert('salvo com sucesso');
-      setNewTitle('');
-      setNewAuthor('');
-    } catch (error) {
-      console.log(`handlePostAdd: ${error}`);
-    }
-  };
-
-  const handleOnClickPostUpdate = (id: string, author: string, title: string) => {
-    setId(id);
-    setAuthor(author);
-    setTitle(title);
-  }
-
-  const handlePostUpdate = async () => {
-    try {
-      await updateDoc(doc(db, 'posts', id), {
-        titulo: title,
-        autor: author,
-      });
-      setId('');
-      setTitle('');
-      setAuthor('');
-      alert('Atualizado com sucessos');
-    } catch (error) {
-      console.log(`handlePostUpdate: ${error}`);
-    };
-  };
-
-  const handlePostDelete = async (id: string) => {
-    try {
-      if (!id) {
-        alert('Informe um id valido');
-        return;
-      };
-      await deleteDoc(doc(db, 'posts', id));
-      alert('Deletado com sucessos');
-    } catch (error) {
-      console.log(`handlePostDelete: ${error}`)
-    }
-  }
+    checkLogin();
+  }, [])
 
   return (
     <div className='App'>
       <h1>ReactJs + Firebase</h1>
-      <div className='container'>
-        {!id &&
-          <div className='create-post'>
-            <label>Titulo: </label>
-            <textarea value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
-
-            <label>Autor: </label>
-            <textarea value={newAuthor} onChange={(event) => setNewAuthor(event.target.value)} />
-
-            <button onClick={handlePostAdd}>Cadastrar</button>
-          </div>
-        }
-
-        {id &&
-          <div className='update-post'>
-            <label>Id: </label>
-            <textarea value={id} readOnly />
-
-            <label>Titulo: </label>
-            <textarea value={title} onChange={(event) => setTitle(event.target.value)} />
-
-            <label>Autor: </label>
-            <textarea value={author} onChange={(event) => setAuthor(event.target.value)} />
-            <div>
-              <button onClick={handlePostUpdate}>Atualizar Post</button>
-              <button onClick={() => setId('')}>Cancelar</button>
+      {
+        user
+          ? (
+            <div className="App">
+              <h1>Logado {userLogged?.email && <span>com {userLogged.email}</span>}</h1>
+              <Post />
+              <Logout />
             </div>
-          </div>
-        }
-
-        <table>
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Autor</th>
-              <th>Titulo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((post) => {
-              return (
-                <tr>
-                  <td>{post.id}</td>
-                  <td>{post.author}</td>
-                  <td>{post.title}</td>
-                  <button className='button-deletar-post' onClick={() => handlePostDelete(post.id)}>Deletar</button>
-                  <button className='button-deletar-post' onClick={() => handleOnClickPostUpdate(post.id, post.author, post.title)}>Atualizar</button>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+          )
+          : (
+            <div className="App">
+              {
+                login
+                  ? (
+                    <div className="login">
+                      <Login />
+                      <button onClick={() => setLogin(false)}>Criar conta!</button>
+                    </div>
+                  )
+                  : (
+                    <div className="login">
+                      <UserAdd />
+                      <button onClick={() => setLogin(true)}>Ja tenho uma conta!</button>
+                    </div>
+                  )
+              }
+            </div>
+          )
+      }
     </div>
-  );
+  )
 }
 
 export default App;
