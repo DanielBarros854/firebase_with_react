@@ -1,0 +1,52 @@
+.post-container textarea {
+  margin-bottom: 10px;
+}
+
+.create-post {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30px;
+}
+
+.create-post button {
+  margin-top: 20px;
+}
+
+.update-post {
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.update-post button {
+  width: 280px;
+  margin: 20px 10px
+}
+
+.container textarea {
+  margin-bottom: 20px;
+}
+
+.container table {
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 10px;
+}
+
+.button-deletar-post {
+  margin-left: 10px;
+  margin-top: 9px;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
