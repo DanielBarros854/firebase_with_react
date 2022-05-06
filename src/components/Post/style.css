@@ -9,7 +9,7 @@
 }
 
 .create-post {
-  width: 600px;
+  width: 45vw;
   display: flex;
   flex-direction: column;
   margin-bottom: 30px;
@@ -20,18 +20,22 @@
 }
 
 .update-post {
-  width: 600px;
+  width: 45vw;
   display: flex;
   flex-direction: column;
 }
 
+.buttons {
+  display: flex;
+}
+
 .update-post button {
-  width: 280px;
+  width: 22.5vw;
   margin: 20px 10px
 }
 
 .post-container table {
-  margin-left: 110px;
+  margin-left: 9vw;
 }
 
 th, td {
@@ -43,16 +47,16 @@ th, td {
 }
 
 .post-side {
-  min-width: 110px;
+  min-width: 10vw;
 }
 
 .post-center {
-  min-width: 300px;
+  min-width: 29vw;
 }
 
 .button-deletar-post {
-  margin-left: 10px;
-  margin-top: 9px;
+  margin-left: 1vw;
+  margin-top: 1vw;
 }
 
 .App {

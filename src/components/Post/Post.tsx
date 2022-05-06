@@ -101,7 +101,7 @@ const Post = (props: any) => {
 
           <label>Autor: </label>
           <textarea value={author} onChange={(event) => setAuthor(event.target.value)} />
-          <div>
+          <div className='buttons'>
             <button onClick={handlePostUpdate}>Atualizar Post</button>
             <button onClick={() => setId('')}>Cancelar</button>
           </div>

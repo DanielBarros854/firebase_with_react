@@ -1,5 +1,6 @@
 import { CgProfile } from "react-icons/cg"
 import Popup from "reactjs-popup"
+import './style.css';
 
 const Header = (props: any) => {
 
