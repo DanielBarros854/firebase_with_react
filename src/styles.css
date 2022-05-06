@@ -7,7 +7,7 @@
 .login {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 21vw;
 }
 
 .login button {
