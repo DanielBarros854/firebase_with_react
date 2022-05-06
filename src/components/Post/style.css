@@ -1,3 +1,9 @@
+.post-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .post-container textarea {
   margin-bottom: 10px;
 }
@@ -24,12 +30,8 @@
   margin: 20px 10px
 }
 
-.container textarea {
-  margin-bottom: 20px;
-}
-
-.container table {
-  margin-top: 20px;
+.post-container table {
+  margin-left: 110px;
 }
 
 th, td {
@@ -38,6 +40,14 @@ th, td {
 
 th, td {
   padding: 10px;
+}
+
+.post-side {
+  min-width: 110px;
+}
+
+.post-center {
+  min-width: 300px;
 }
 
 .button-deletar-post {

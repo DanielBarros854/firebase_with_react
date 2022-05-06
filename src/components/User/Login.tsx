@@ -27,7 +27,7 @@ const Login = () => {
       <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
 
       <label>Senha</label>
-      <input type="text" value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
       <button onClick={handleLogin}>Login</button>
     </div>

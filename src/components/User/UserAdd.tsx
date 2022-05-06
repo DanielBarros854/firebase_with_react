@@ -1,9 +1,12 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
-import { authentication } from "../../config/firebaseConnection";
+import { authentication, db } from "../../config/firebaseConnection";
 import './userAdd.css'
 
-const UserAdd = () => {
+const UserAdd = (props: any) => {
+  const [name, setName] = useState('');
+  const [office, setOffice] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -11,7 +14,13 @@ const UserAdd = () => {
     try {
       if (email && password) {
         const new_user = await createUserWithEmailAndPassword(authentication, email, password);
-        console.log(new_user)
+        console.log(new_user);
+        await setDoc(doc(db, 'users', new_user.user.uid), {
+          nome: name,
+          cargo: office,
+          status: true,
+        })
+        props.setLogin(true);
       } else {
         alert('Algum campo esta vazio!')
       }
@@ -29,6 +38,12 @@ const UserAdd = () => {
       <div className='title'>
         <h1>Cadastro de Usuario</h1>
       </div>
+      <label>Nome</label>
+      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+
+      <label>Cargo</label>
+      <input type="text" value={office} onChange={(e) => setOffice(e.target.value)} />
+
       <label>Email</label>
       <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
 

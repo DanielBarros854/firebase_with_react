@@ -1,9 +1,10 @@
-import { onSnapshot, addDoc, collection, doc, query, updateDoc, deleteDoc } from 'firebase/firestore';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { onSnapshot, addDoc, collection, doc, query, updateDoc, deleteDoc, where } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { db } from '../../config/firebaseConnection';
 import './style.css'
 
-const Post = () => {
+const Post = (props: any) => {
   const [id, setId] = useState('');
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
@@ -16,7 +17,7 @@ const Post = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const _query = query(collection(db, 'posts'));
+        const _query = query(collection(db, 'posts'), where("user_id", "==", props.userLogged.uid));
         onSnapshot(_query, (docs) => {
           const myPosts: any[] = [];
 
@@ -40,6 +41,7 @@ const Post = () => {
   const handlePostAdd = async () => {
     try {
       await addDoc(postsRef, {
+        user_id: props.userLogged.uid,
         titulo: newTitle,
         autor: newAuthor,
       });
@@ -88,19 +90,8 @@ const Post = () => {
 
   return (
     <div className='post-container'>
-      {!id &&
-        <div className='create-post'>
-          <label>Titulo: </label>
-          <textarea value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
-
-          <label>Autor: </label>
-          <textarea value={newAuthor} onChange={(event) => setNewAuthor(event.target.value)} />
-
-          <button onClick={handlePostAdd}>Cadastrar</button>
-        </div>
-      }
-
-      {id &&
+      {id
+        ?
         <div className='update-post'>
           <label>Id: </label>
           <textarea value={id} readOnly />
@@ -115,30 +106,45 @@ const Post = () => {
             <button onClick={() => setId('')}>Cancelar</button>
           </div>
         </div>
-      }
+        :
+        <div className='create-post'>
+          <label>Titulo: </label>
+          <textarea value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
 
-      <table>
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Autor</th>
-            <th>Titulo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {posts.map((post) => {
-            return (
+          <label>Autor: </label>
+          <textarea value={newAuthor} onChange={(event) => setNewAuthor(event.target.value)} />
+
+          <button onClick={handlePostAdd}>Cadastrar</button>
+        </div>
+      }
+      {
+        posts.length
+          ?
+          <table>
+            <thead>
               <tr>
-                <td>{post.id}</td>
-                <td>{post.author}</td>
-                <td>{post.title}</td>
-                <button className='button-deletar-post' onClick={() => handlePostDelete(post.id)}>Deletar</button>
-                <button className='button-deletar-post' onClick={() => handleOnClickPostUpdate(post.id, post.author, post.title)}>Atualizar</button>
+                <th>Id</th>
+                <th>Autor</th>
+                <th>Titulo</th>
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {posts.map((post) => {
+                return (
+                  <tr>
+                    <td className='post-side'>{post.id}</td>
+                    <td className='post-center'>{post.author}</td>
+                    <td className='post-side'>{post.title}</td>
+                    <button className='button-deletar-post' onClick={() => handlePostDelete(post.id)}>Deletar</button>
+                    <button className='button-deletar-post' onClick={() => handleOnClickPostUpdate(post.id, post.author, post.title)}>Atualizar</button>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+          :
+          <div></div>
+      }
     </div>
   );
 }
