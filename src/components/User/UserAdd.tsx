@@ -14,7 +14,7 @@ const UserAdd = (props: any) => {
     try {
       if (email && password) {
         const new_user = await createUserWithEmailAndPassword(authentication, email, password);
-        console.log(new_user);
+
         await setDoc(doc(db, 'users', new_user.user.uid), {
           nome: name,
           cargo: office,
