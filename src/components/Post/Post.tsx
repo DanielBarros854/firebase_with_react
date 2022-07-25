@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { onSnapshot, addDoc, collection, doc, query, updateDoc, deleteDoc, where } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { db } from '../../config/firebaseConnection';
+import { UserLoggedContext } from '../../context/user';
 import './style.css'
 
 const Post = (props: any) => {
@@ -12,12 +13,14 @@ const Post = (props: any) => {
   const [newAuthor, setNewAuthor] = useState('');
   const [posts, setPosts] = useState([] as any[]);
 
+  const { userLogged } = useContext(UserLoggedContext);
+
   const postsRef = collection(db, 'posts');
 
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const _query = query(collection(db, 'posts'), where("user_id", "==", props.userLogged.uid));
+        const _query = query(collection(db, 'posts'), where("user_id", "==", userLogged?.uid));
         onSnapshot(_query, (docs) => {
           const myPosts: any[] = [];
 
@@ -41,7 +44,7 @@ const Post = (props: any) => {
   const handlePostAdd = async () => {
     try {
       await addDoc(postsRef, {
-        user_id: props.userLogged.uid,
+        user_id: userLogged?.uid,
         titulo: newTitle,
         autor: newAuthor,
       });
