@@ -1,15 +1,17 @@
 import { createContext, useState } from "react";
 
-import { UserLoggedInterface, UserLoggedStateInterface } from "../interface/UserLogged";
+import { UserLoggedContextProps, UserLoggedInterface, UserLoggedStateInterface } from "../interface/UserLogged";
 
-export const UserLoggedContext = createContext<UserLoggedStateInterface>({
-  userLogged: null,
+const initial_value = {
+  userLogged: {} as UserLoggedInterface,
   setUserLogged: () => { },
-});
+}
 
-const UserLoggedProvider = ({ children }: any) => {
-  const [userLogged, setUserLogged] = useState({} as UserLoggedInterface | null)
-  console.log(userLogged);
+export const UserLoggedContext = createContext<UserLoggedStateInterface>(initial_value);
+
+const UserLoggedProvider = ({ children }: UserLoggedContextProps) => {
+  const [userLogged, setUserLogged] = useState(initial_value.userLogged)
+
   return (
     <UserLoggedContext.Provider value={{ userLogged, setUserLogged }}>
       {children}

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { ReactNode } from "react";
 
 export interface UserLoggedInterface {
   uid: string,
@@ -9,6 +9,10 @@ export interface UserLoggedInterface {
 }
 
 export interface UserLoggedStateInterface {
-  userLogged: UserLoggedInterface | null,
-  setUserLogged: Dispatch<SetStateAction<UserLoggedInterface | null>>,
+  userLogged?: UserLoggedInterface,
+  setUserLogged: (newState: UserLoggedInterface) => void,
+}
+
+export type UserLoggedContextProps = {
+  children: ReactNode
 }
