@@ -9,7 +9,7 @@ export interface UserLoggedInterface {
 }
 
 export interface UserLoggedStateInterface {
-  userLogged?: UserLoggedInterface,
+  userLogged?: UserLoggedInterface | null,
   setUserLogged: (newState: UserLoggedInterface) => void,
 }
 

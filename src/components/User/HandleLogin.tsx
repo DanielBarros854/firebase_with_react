@@ -11,6 +11,7 @@ import Post from "../Post/Post";
 import Logout from "./Logout";
 import Login from "./Login";
 import UserAdd from "./UserAdd";
+import { UserLoggedInterface } from "../../interface";
 
 const HandleLogin = () => {
   const [user, setUser] = useState(false);
@@ -23,14 +24,14 @@ const HandleLogin = () => {
       onAuthStateChanged(authentication, async (user) => {
         if (!user) {
           setUser(false);
-          setUserLogged(null);
+          setUserLogged({} as UserLoggedInterface);
           return;
         }
         const snapshot = await getDoc(doc(db, 'users', user.uid))
         if (!snapshot.data()?.status) {
           console.log('Usuario desativado!!!')
           setUser(false);
-          setUserLogged(null);
+          setUserLogged({} as UserLoggedInterface);
           return;
         }
         setUser(true);
